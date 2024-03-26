@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "cookie sync",
+  "version": "0.0.1",
+  "description": "",
+  "homepage_url": "https://github.com/noscripter/cookie-sync",
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "http://*/",
+    "https://*/",
+    "cookies",
+    "storage"
+  ]
+}
