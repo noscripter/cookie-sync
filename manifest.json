@@ -5,6 +5,10 @@
   "author": "noscripter",
   "description": "sync current tab's cookie to specified domain",
   "homepage_url": "https://github.com/noscripter/cookie-sync",
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png"
+  },
   "action": {
     "default_title": "sync cookie",
     "default_popup": "popup.html",
