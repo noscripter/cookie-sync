@@ -5,8 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="data:image/png;">
-    <title>Strip secure/httponly flag from cookies</title>
   </head>
   <body>
+    <input id="target" onChange="validate" />
+    <button onclick="stripFlags">Sync</button>
+    <script src="js/background.js"></script>
   </body>
 </html>
