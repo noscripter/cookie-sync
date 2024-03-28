@@ -98,9 +98,31 @@ function showMsg({
 window.onload = function() {
   const targetEl = document.querySelector('#target');
   const syncButton = document.querySelector('#sync');
+  const syncCurrentButton = document.querySelector('#syncCurrent');
 
-  syncButton.addEventListener('click', function() {
-    console.log('clicked', targetEl.value);
+  syncButton.addEventListener('click', async function() {
+    try {
+      console.log('sourceUrl', sourceUrl);
+      const targetUrl = targetEl.value;
+      if (/^https?:\/\/[^/]+\//.test(targetUrl)) {
+        // clear error message
+        const cookie = await getAllCookie(targetUrl);
+        showMsg({
+          message: `current cookie: ${JSON.stringify(cookie, null, '\t')}`,
+          type: 'info',
+        })
+      } else {
+        showMsg({
+          message: 'invalid URL(should match `/^https?:\/\/[^/]+\//`)',
+          type: 'error',
+        });
+      }
+    } catch (e) {
+      showMsg({ message: e.message, type: 'error' });
+    }
+  });
+
+  syncCurrentButton.addEventListener('click', function() {
     getCurrentTab(async function(tabs) {
       try {
         const sourceUrl = tabs[0].url;
