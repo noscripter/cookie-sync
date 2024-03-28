@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "cookie sync",
   "version": "0.0.1",
   "author": "noscripter",
@@ -9,12 +9,24 @@
     "16": "logo.png",
     "32": "logo.png"
   },
-  "action": {
+  "browser_action": {
     "default_title": "sync cookie",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "logo.png",
       "32": "logo.png"
     }
+  },
+  "permissions": [
+    "http://*/*",
+    "https://*/*",
+    "tabs",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": true
   }
 }
