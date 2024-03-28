@@ -5,10 +5,39 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="data:image/png;">
+    <style>
+#container {
+  width: 200px;
+  margin: 0;
+  padding: 5px;
+  width: 400px;
+}
+
+input {
+  width: 70%;
+  height: 28px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #CCC;
+}
+
+button {
+  width: calc(100% - 70% - 20px);
+  height: 40px;
+  background: #04AA6D;
+  border-radius: 5px;
+  color: #FFF;
+}
+    </style>
   </head>
   <body>
-    <input id="target" onChange="validate" />
-    <button onclick="stripFlags">Sync</button>
+    <div id="container">
+      <div id="input-area">
+        <input id="target" />
+        <button id="sync">Sync</button>
+      </div>
+      <div id="msg"></div>
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>
