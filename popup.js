@@ -54,6 +54,11 @@ function showError(message) {
   msgEl.innerHTML = `<p style="color: red; font-weight: bold">${message || '出错了'}</p>`
 }
 
+function clearError() {
+  const msgEl = document.querySelector('#msg');
+  msgEl.innerHTML = ''
+}
+
 window.onload = function() {
   const targetEl = document.querySelector('#target');
   const syncButton = document.querySelector('#sync');
@@ -66,6 +71,8 @@ window.onload = function() {
         console.log('sourceUrl', sourceUrl);
         const targetUrl = targetEl.value;
         if (/^https?:\/\/[^/]+\//.test(targetUrl)) {
+          // clear error message
+          clearError();
         } else {
           showError('invalid URL(should match `/^https?:\/\/[^/]+\//`)');
         }
