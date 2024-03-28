@@ -52,6 +52,29 @@ function permissionsContains(url) {
 }
 
 /**
+ * 设置cookie
+ * @param  {string}  url   [需要设置的 Cookie 相关联的 URL]
+ * @param  {object}  opt  [额外参数]
+ */
+function setCookie(url, opt) {
+  return new Promise(function(resolve, reject) {
+    chrome.cookies.set(
+      {
+        url,
+        ...opt
+      },
+      function(cookie) {
+        if (cookie) {
+          resolve(cookie)
+        } else {
+          resolve('')
+        }
+      }
+    )
+  })
+}
+
+/**
  * 获取所有cookie
  * @param  {string}  url  [需要获取的 Cookie 相关联的 URL]
  * @param  {object}  opt  [额外参数]
@@ -100,33 +123,74 @@ function showMsg({
 const VALID_URL = /^https?:\/\/[^/]+[:\d+]?[\/]?/;
 const DEFAULT_TARGET_URL = 'http://localhost:3333';
 
+async function getCookie(sourceUrl) {
+  const cookie = await getAllCookie(sourceUrl);
+  showMsg({
+    message: `domain: ${sourceUrl}<br> cookie: <pre style="color: #FFF; font-size: 1.2rem; font-weight: bolder;">${JSON.stringify(cookie, null, '\t')}</pre>`,
+    type: 'info',
+  });
+  return cookie;
+}
+
 async function syncCookie(sourceEl, targetEl) {
   try {
     const sourceUrl = sourceEl.value;
-    const targetUrl = targetEl.value;
+    let targetUrl = targetEl.value || DEFAULT_TARGET_URL;
     if (targetUrl === "") {
       targetEl.value = DEFAULT_TARGET_URL;
     }
-    if (!VALID_URL.test(sourceEl.value)) {
+    if (!VALID_URL.test(sourceUrl)) {
       showMsg({
         message: `sourceUrl invalid`,
         type: 'error',
       });
-    } else if (!VALID_URL.test(targetEl.value)) {
+    } else if (!VALID_URL.test(targetUrl)) {
       showMsg({
         message: `targetUrl invalid`,
         type: 'error',
       });
     } else {
-      const cookie = await getAllCookie(sourceUrl);
-      showMsg({
-        message: `domain: ${sourceUrl}<br> cookie: <pre style="color: #FFF; font-size: 1.2rem; font-weight: bolder;">${JSON.stringify(cookie, null, '\t')}</pre>`,
-        type: 'info',
-      })
+      const cookie = await getCookie(sourceUrl);
+      if (cookie && cookie.length) {
+        const allCookie = cookie.map((item) => {
+          return setCookie(targetUrl, {
+            domain: getWebDomain(targetUrl),
+            name: item.name,
+            value: item.value,
+            path: item.path,
+            expirationDate: item.expirationDate
+          })
+        })
+        Promise.all(allCookie)
+          .then(() => {
+            showMsg({
+              message: `sync from ${sourceUrl} to ${targetUrl} success`
+            })
+            .cath(e => {
+              showMsg({
+                message: `sync from ${sourceUrl} to ${targetUrl} failed with error: ${e?.message}`,
+                type: 'error'
+              })
+            });
+          })
+      } else {
+        showMsg({
+          message: 'cookie empty',
+          type: 'error'
+        })
+      }
     }
   } catch (e) {
     showMsg({ message: e.message, type: 'error' });
   }
+}
+
+/**
+ * 获取网站以点开头的Domain
+ * @param  {string}  url [网站地址]
+ */
+function getWebDomain(url) {
+  return new URL(url).hostname
 }
 
 window.onload = function() {
@@ -134,6 +198,7 @@ window.onload = function() {
   const targetEl = document.querySelector('#target');
   const syncButton = document.querySelector('#sync');
   const syncCurrentButton = document.querySelector('#syncCurrent');
+  const showCookieButton = document.querySelector('#showCookie');
 
   syncButton.addEventListener('click', async () => {
     await syncCookie(sourceEl, targetEl);
@@ -143,7 +208,11 @@ window.onload = function() {
     const tabs = await getCurrentTab();
     const sourceUrl = tabs[0].url;
     sourceEl.value = sourceUrl;
-    await syncCookie(sourceEl, targetEl)
+  });
+
+  showCookieButton.addEventListener('click', async () => {
+    const sourceUrl = sourceEl.value;
+    await getCookie(sourceUrl);
   });
 }
 

@@ -25,10 +25,11 @@
         width: 80%;
       }
       .section {
-        align-items: center;
+        align-items: flex-end;
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
-        margin: 48px 0;
+        margin: 10px 0;
         padding: 0px;
         width: 100%;
       }
@@ -44,7 +45,11 @@
         border: none;
         color: #FFF;
         cursor: pointer;
+        font-size: 0.8rem;
         height: 40px;
+        width: 180px;
+        text-align: center;
+        margin: 10px 0;
       }
       #sync {
         background: #0F8AF9;
@@ -57,6 +62,9 @@
       #syncCurrent {
         padding: 5px 10px;
         background: limegreen;
+      }
+      #showCookie {
+        background: #F90F8A;
       }
       label {
         text-align: left;
@@ -76,12 +84,19 @@
   </head>
   <body>
     <div id="container">
-      <label for="target">source</label>
-      <input id="source" placeholder="enter source domain url" />
-      <label for="target">target</label>
-      <input id="target" placeholder="enter target domain url(http://localhost:3333 by default)" />
       <div class="section">
-        <button id="syncCurrent">Sync Current Domain</button>
+        <label for="target">source</label>
+        <input id="source" placeholder="enter source domain url" />
+        <div style="display: flex; justify-content: center; align-items: space-between;">
+          <button id="showCookie">show source domain cookie</button>
+          <button id="syncCurrent">set current tab as domain</button>
+        </div>
+      </div>
+      <div class="section">
+        <label for="target">target</label>
+        <input id="target" placeholder="enter target domain url(http://localhost:3333 by default)" />
+      </div>
+      <div class="section">
         <button id="sync">Sync Input Domain</button>
       </div>
       <div id="msg"></div>
