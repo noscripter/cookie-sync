@@ -2,20 +2,22 @@
  * 获取当前tab
  * @param  {function}  cb  [回调函数]
  */
-function getCurrentTab(cb) {
-  try {
-    chrome.tabs.query(
-      {
-        active: true,
-        currentWindow: true
-      },
-      (tabs) => {
-        cb && cb(tabs)
-      }
-    )
-  } catch (error) {
-    console.log(error)
-  }
+async function getCurrentTab() {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.tabs.query(
+        {
+          active: true,
+          currentWindow: true
+        },
+        (tabs) => {
+          resolve(tabs)
+        }
+      )
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 
 /**
@@ -80,70 +82,68 @@ function showMsg({
   let color;
   switch (type) {
     case 'error': {
-      color = 'red';
+      color = '#CC3000';
       break;
     }
     case 'info': {
-      color = 'blue';
+      color = '#FFF';
       break;
     }
     default: {
-      color = 'black';
+      color = '#EEE';
       break;
     }
   }
-  msgEl.innerHTML = `<p style="color: ${color}; font-weight: bold">${message}</p>`
+  msgEl.innerHTML = `<p style="color: ${color}; font-weight: bolder; font-size: 1.2rem;">${message}</p>`
+}
+
+const VALID_URL = /^https?:\/\/[^/]+[:\d+]?[\/]?/;
+const DEFAULT_TARGET_URL = 'http://localhost:3333';
+
+async function syncCookie(sourceEl, targetEl) {
+  try {
+    const sourceUrl = sourceEl.value;
+    const targetUrl = targetEl.value;
+    if (targetUrl === "") {
+      targetEl.value = DEFAULT_TARGET_URL;
+    }
+    if (!VALID_URL.test(sourceEl.value)) {
+      showMsg({
+        message: `sourceUrl invalid`,
+        type: 'error',
+      });
+    } else if (!VALID_URL.test(targetEl.value)) {
+      showMsg({
+        message: `targetUrl invalid`,
+        type: 'error',
+      });
+    } else {
+      const cookie = await getAllCookie(sourceUrl);
+      showMsg({
+        message: `domain: ${sourceUrl}<br> cookie: <pre style="color: #FFF; font-size: 1.2rem; font-weight: bolder;">${JSON.stringify(cookie, null, '\t')}</pre>`,
+        type: 'info',
+      })
+    }
+  } catch (e) {
+    showMsg({ message: e.message, type: 'error' });
+  }
 }
 
 window.onload = function() {
+  const sourceEl = document.querySelector('#source');
   const targetEl = document.querySelector('#target');
   const syncButton = document.querySelector('#sync');
   const syncCurrentButton = document.querySelector('#syncCurrent');
 
-  syncButton.addEventListener('click', async function() {
-    try {
-      const targetUrl = targetEl.value;
-      if (/^https?:\/\/[^/]+\//.test(targetUrl)) {
-        const cookie = await getAllCookie(targetUrl);
-        showMsg({
-          message: `current cookie: ${JSON.stringify(cookie, null, '\t')}`,
-          type: 'info',
-        })
-      } else {
-        showMsg({
-          message: 'invalid URL(should match `/^https?:\/\/[^/]+\//`)',
-          type: 'error',
-        });
-      }
-    } catch (e) {
-      showMsg({ message: e.message, type: 'error' });
-    }
+  syncButton.addEventListener('click', async () => {
+    await syncCookie(sourceEl, targetEl);
   });
 
-  syncCurrentButton.addEventListener('click', function() {
-    getCurrentTab(async function(tabs) {
-      try {
-        const sourceUrl = tabs[0].url;
-        showMsg('sourceUrl:' + sourceUrl);
-        return;
-        const targetUrl = targetEl.value;
-        if (/^https?:\/\/[^/]+\//.test(targetUrl)) {
-          // clear error message
-          const cookie = await getAllCookie(sourceUrl);
-          showMsg({
-            message: `current cookie: ${JSON.stringify(cookie, null, '\t')}`,
-            type: 'info',
-          })
-        } else {
-          showMsg({
-            message: 'invalid URL(should match `/^https?:\/\/[^/]+\//`)',
-            type: 'error',
-          });
-        }
-      } catch (e) {
-        showMsg({ message: e.message, type: 'error' });
-      }
-    })
+  syncCurrentButton.addEventListener('click', async () => {
+    const tabs = await getCurrentTab();
+    const sourceUrl = tabs[0].url;
+    sourceEl.value = sourceUrl;
+    await syncCookie(sourceEl, targetEl)
   });
 }
 

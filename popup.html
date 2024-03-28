@@ -8,7 +8,7 @@
     <style>
       body {
         background: #04AA6D;
-        height: 200px;
+        height: 600px;
         margin: 0;
         padding: 0;
         width: 500px;
@@ -28,7 +28,7 @@
         align-items: center;
         display: flex;
         justify-content: space-between;
-        margin: 10px 0;
+        margin: 48px 0;
         padding: 0px;
         width: 100%;
       }
@@ -58,11 +58,28 @@
         padding: 5px 10px;
         background: limegreen;
       }
+      label {
+        text-align: left;
+        color: #FFF;
+        font-size: 1.2rem;
+        font-weight: bolder;
+        margin: 10px auto;
+      }
+      #msg {
+        border-radius: 5px;
+        width: 100%;
+        padding: 2px;
+        overflow: auto;
+        max-height: 320px;
+      }
     </style>
   </head>
   <body>
     <div id="container">
-      <input id="target" placeholder="enter custom domain url" />
+      <label for="target">source</label>
+      <input id="source" placeholder="enter source domain url" />
+      <label for="target">target</label>
+      <input id="target" placeholder="enter target domain url(http://localhost:3333 by default)" />
       <div class="section">
         <button id="syncCurrent">Sync Current Domain</button>
         <button id="sync">Sync Input Domain</button>
