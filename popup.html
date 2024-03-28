@@ -6,57 +6,58 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="data:image/png;">
     <style>
-body {
-  align-items: center;
-  background: green;
-  display: flex;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-}
-#container {
-  height: 200px;
-  margin: 10px auto;
-  padding: 5px;
-  width: 200px;
-}
-
-input {
-  border-radius: 5px;
-  border: none;
-  box-shadow: none;
-  height: 28px;
-  padding: 5px;
-}
-
-.section {
-  align-items: flex-start;
-  display: flex;
-  justify-content: center;
-  margin: auto;
-  padding: 5px;
-}
-
-button {
-  background: #04AA6D;
-  border-radius: 5px;
-  border: none;
-  color: #FFF;
-  cursor: pointer;
-  height: 40px;
-  margin-right: 10px;
-  margin-left: 5px;
-  padding: 5px 10px;
-}
+      body {
+        background: #00886D;
+        height: 200px;
+        margin: 0;
+        padding: 0;
+        width: 500px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+      }
+      #container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 10px auto;
+        width: 80%;
+      }
+      .section {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+        padding: 0px;
+        width: 100%;
+      }
+      input {
+        border-radius: 5px;
+        border: none;
+        box-shadow: none;
+        width: 100%;
+        height: 42px;
+      }
+      button {
+        background: #04AA6D;
+        border-radius: 5px;
+        border: none;
+        color: #FFF;
+        cursor: pointer;
+        height: 40px;
+        padding: 5px 10px;
+      }
+      #syncCurrent {
+        background: red;
+      }
     </style>
   </head>
   <body>
     <div id="container">
       <input id="target" placeholder="enter custom domain url" />
-      <div classd="section">
+      <div class="section">
         <button id="syncCurrent">syncCurrentDomain</button>
-      </div>
-      <div classd="section">
         <button id="sync">Sync</button>
       </div>
       <div id="msg"></div>

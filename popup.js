@@ -102,10 +102,8 @@ window.onload = function() {
 
   syncButton.addEventListener('click', async function() {
     try {
-      console.log('sourceUrl', sourceUrl);
       const targetUrl = targetEl.value;
       if (/^https?:\/\/[^/]+\//.test(targetUrl)) {
-        // clear error message
         const cookie = await getAllCookie(targetUrl);
         showMsg({
           message: `current cookie: ${JSON.stringify(cookie, null, '\t')}`,
@@ -126,7 +124,8 @@ window.onload = function() {
     getCurrentTab(async function(tabs) {
       try {
         const sourceUrl = tabs[0].url;
-        console.log('sourceUrl', sourceUrl);
+        showMsg('sourceUrl:' + sourceUrl);
+        return;
         const targetUrl = targetEl.value;
         if (/^https?:\/\/[^/]+\//.test(targetUrl)) {
           // clear error message
