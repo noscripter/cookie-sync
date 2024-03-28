@@ -49,14 +49,50 @@ function permissionsContains(url) {
   })
 }
 
-function showError(message) {
-  const msgEl = document.querySelector('#msg');
-  msgEl.innerHTML = `<p style="color: red; font-weight: bold">${message || '出错了'}</p>`
+/**
+ * 获取所有cookie
+ * @param  {string}  url  [需要获取的 Cookie 相关联的 URL]
+ * @param  {object}  opt  [额外参数]
+ */
+function getAllCookie(url, opt) {
+  return new Promise(function(resolve) {
+    chrome.cookies.getAll(
+      {
+        url,
+        ...opt
+      },
+      function(cookie) {
+        if (cookie) {
+          resolve(cookie)
+        } else {
+          resolve(null)
+        }
+      }
+    )
+  })
 }
 
-function clearError() {
+function showMsg({
+  message,
+  type
+}) {
   const msgEl = document.querySelector('#msg');
-  msgEl.innerHTML = ''
+  let color;
+  switch (type) {
+    case 'error': {
+      color = 'red';
+      break;
+    }
+    case 'info': {
+      color = 'blue';
+      break;
+    }
+    default: {
+      color = 'black';
+      break;
+    }
+  }
+  msgEl.innerHTML = `<p style="color: ${color}; font-weight: bold">${message}</p>`
 }
 
 window.onload = function() {
@@ -65,19 +101,26 @@ window.onload = function() {
 
   syncButton.addEventListener('click', function() {
     console.log('clicked', targetEl.value);
-    getCurrentTab(function(tabs) {
+    getCurrentTab(async function(tabs) {
       try {
         const sourceUrl = tabs[0].url;
         console.log('sourceUrl', sourceUrl);
         const targetUrl = targetEl.value;
         if (/^https?:\/\/[^/]+\//.test(targetUrl)) {
           // clear error message
-          clearError();
+          const cookie = await getAllCookie(sourceUrl);
+          showMsg({
+            message: `current cookie: ${JSON.stringify(cookie, null, '\t')}`,
+            type: 'info',
+          })
         } else {
-          showError('invalid URL(should match `/^https?:\/\/[^/]+\//`)');
+          showMsg({
+            message: 'invalid URL(should match `/^https?:\/\/[^/]+\//`)',
+            type: 'error',
+          });
         }
       } catch (e) {
-        showError(e.message);
+        showMsg({ message: e.message, type: 'error' });
       }
     })
   });
