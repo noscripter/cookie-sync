@@ -67,7 +67,7 @@ function setCookie(url, opt) {
         if (cookie) {
           resolve(cookie)
         } else {
-          resolve('')
+          reject(false)
         }
       }
     )
@@ -117,7 +117,7 @@ function showMsg({
       break;
     }
   }
-  msgEl.innerHTML = `<p style="color: ${color}; font-weight: bolder; font-size: 1.2rem;">${message}</p>`
+  msgEl.innerHTML = `<p style="color: ${color}; font-weight: bolder; font-size: 1.2rem; width: 100%;">${message}</p>`
 }
 
 const VALID_URL = /^https?:\/\/[^/]+[:\d+]?[\/]?/;
@@ -126,7 +126,7 @@ const DEFAULT_TARGET_URL = 'http://localhost:3333';
 async function getCookie(sourceUrl) {
   const cookie = await getAllCookie(sourceUrl);
   showMsg({
-    message: `domain: ${sourceUrl}<br> cookie: <pre style="color: #FFF; font-size: 1.2rem; font-weight: bolder;">${JSON.stringify(cookie, null, '\t')}</pre>`,
+    message: `<textarea style="min-height: 200px; background: #000; color: limegreen; font-size:0.75rem; width:100%; border-radius: 5px; border: none;">${JSON.stringify(cookie, null, '  ')}</textarea>`,
     type: 'info',
   });
   return cookie;
@@ -153,6 +153,13 @@ async function syncCookie(sourceEl, targetEl) {
       const cookie = await getCookie(sourceUrl);
       if (cookie && cookie.length) {
         const allCookie = cookie.map((item) => {
+          console.log(`debugging setCookie`, JSON.stringify({
+            domain: getWebDomain(targetUrl),
+            name: item.name,
+            value: item.value,
+            path: item.path,
+            expirationDate: item.expirationDate
+          }));
           return setCookie(targetUrl, {
             domain: getWebDomain(targetUrl),
             name: item.name,
@@ -166,13 +173,13 @@ async function syncCookie(sourceEl, targetEl) {
             showMsg({
               message: `sync from ${sourceUrl} to ${targetUrl} success`
             })
-            .cath(e => {
-              showMsg({
-                message: `sync from ${sourceUrl} to ${targetUrl} failed with error: ${e?.message}`,
-                type: 'error'
-              })
-            });
           })
+          .cath(e => {
+            showMsg({
+              message: `sync from ${sourceUrl} to ${targetUrl} failed with error: ${e?.message}`,
+              type: 'error'
+            })
+          });
       } else {
         showMsg({
           message: 'cookie empty',
