@@ -153,14 +153,7 @@ async function syncCookie(sourceEl, targetEl) {
       const cookie = await getCookie(sourceUrl);
       if (cookie && cookie.length) {
         const allCookie = cookie.map((item) => {
-          console.log(`debugging setCookie`, JSON.stringify({
-            domain: getWebDomain(targetUrl),
-            name: item.name,
-            value: item.value,
-            path: item.path,
-            expirationDate: item.expirationDate
-          }));
-          return setCookie(targetUrl, {
+          setCookie(targetUrl, {
             domain: getWebDomain(targetUrl),
             name: item.name,
             value: item.value,
@@ -168,18 +161,17 @@ async function syncCookie(sourceEl, targetEl) {
             expirationDate: item.expirationDate
           })
         })
-        Promise.all(allCookie)
-          .then(() => {
-            showMsg({
-              message: `sync from ${sourceUrl} to ${targetUrl} success`
-            })
-          })
-          .cath(e => {
-            showMsg({
-              message: `sync from ${sourceUrl} to ${targetUrl} failed with error: ${e?.message}`,
-              type: 'error'
-            })
+        try {
+          await Promise.all(allCookie);
+          showMsg({
+            message: `sync from ${sourceUrl} to ${targetUrl} success`
           });
+        } catch (e) {
+          showMsg({
+            message: `sync from ${sourceUrl} to ${targetUrl} failed with error: ${e?.message}`,
+            type: 'error'
+          })
+        }
       } else {
         showMsg({
           message: 'cookie empty',
