@@ -27,8 +27,9 @@ async function getCurrentTab() {
  */
 function setCookie(url, opt) {
   return new Promise(function(resolve, reject) {
-    console.log('debugging setCookie url', url);
+    //console.log('debugging setCookie url', url);
     console.log('debugging setCookie opt', opt);
+    console.log('debugging setCookie opt.domain', opt.domain);
     // set current url's cookie
     chrome.cookies.set(
       {
