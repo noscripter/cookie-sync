@@ -21,47 +21,20 @@ async function getCurrentTab() {
 }
 
 /**
- * 格式化网址为最简单的符合权限的格式
- * @param  {string}  url [网站地址]
- */
-function getFormatUrl(url) {
-  if (!url.includes('http:') && !url.includes('https:')) {
-    url = 'http://' + url
-  }
-  const formatUrl = new URL(url)
-  return `${formatUrl.protocol}//${formatUrl.host}/`
-}
-
-/**
- * 查看权限
- * @param  {string}  url  [需要请求相关权限的目标URL]
- * @param  {array}   otherPermission  [额外权限参数]
- */
-function permissionsContains(url) {
-  return new Promise(resolve => {
-    chrome.permissions.contains(
-      {
-        permissions: ['cookies'],
-        origins: [url]
-      },
-      function(res) {
-        resolve(res)
-      }
-    )
-  })
-}
-
-/**
  * 设置cookie
  * @param  {string}  url   [需要设置的 Cookie 相关联的 URL]
  * @param  {object}  opt  [额外参数]
  */
 function setCookie(url, opt) {
   return new Promise(function(resolve, reject) {
+    console.log('debugging setCookie url', url);
+    console.log('debugging setCookie opt', opt);
+    // set current url's cookie
     chrome.cookies.set(
       {
         url,
-        ...opt
+        name: opt.name,
+        value: opt.value,
       },
       function(cookie) {
         if (cookie) {
@@ -70,7 +43,23 @@ function setCookie(url, opt) {
           reject(false)
         }
       }
-    )
+    );
+    // set cookie for source domain
+    chrome.cookies.set(
+      {
+        domain: opt.domain,
+        url,
+        name: opt.name,
+        value: opt.value,
+      },
+      function(cookie) {
+        if (cookie) {
+          resolve(cookie)
+        } else {
+          reject(false)
+        }
+      }
+    );
   })
 }
 
@@ -83,10 +72,13 @@ function getAllCookie(url, opt) {
   return new Promise(function(resolve) {
     chrome.cookies.getAll(
       {
-        url,
+        domain: getWebDomain(url),
         ...opt
       },
       function(cookie) {
+        console.log('debugging getAllCookie url', url);
+        console.log('debugging getAllCookie opt', opt);
+        console.log('debugging getAllCookie cookie', cookie);
         if (cookie) {
           resolve(cookie)
         } else {
@@ -189,7 +181,9 @@ async function syncCookie(sourceEl, targetEl) {
  * @param  {string}  url [网站地址]
  */
 function getWebDomain(url) {
-  return new URL(url).hostname
+  const hostname = new URL(url).hostname.split('.').slice(-2).join('.');
+  console.log('debugging getWebDomainHostname', hostname);
+  return hostname;
 }
 
 window.onload = function() {
