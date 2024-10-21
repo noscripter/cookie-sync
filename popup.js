@@ -165,6 +165,7 @@ async function syncCookie(sourceEl, targetEl) {
           showMsg({
             message: `sync from ${sourceUrl} to ${targetUrl} success`
           });
+          chrome.tabs.update({ url: targetHref }); // {{ edit_1 }}
         } catch (e) {
           showMsg({
             message: `sync from ${sourceUrl} to ${targetUrl} failed with error: ${e?.message}`,
@@ -215,8 +216,8 @@ window.onload = function() {
     if (match) {
       const decodedRedirectUrl = decodeURIComponent(match[1]);
       const temp = new URL(decodedRedirectUrl);
-      const redirectHostname = temp.host;
-      targetEl.value = redirectHostname;
+      // const redirectOrigin = temp.origin;
+      targetEl.value = temp.origin;
       targetHref = temp.href;
     }
   });
