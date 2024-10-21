@@ -20,6 +20,8 @@ async function getCurrentTab() {
   })
 }
 
+let targetHref = '';
+
 /**
  * 设置cookie
  * @param  {string}  url   [需要设置的 Cookie 相关联的 URL]
@@ -117,7 +119,7 @@ function showMsg({
   msgEl.innerHTML = `<p style="color: ${color}; font-weight: bolder; font-size: 1.2rem; width: 100%;">${message}</p>`
 }
 
-const VALID_URL = /^https?:\/\/[^/]+[:\d+]?[\/]?/;
+const VALID_URL = /^(https?:\/\/)?[^/]+[:\d+]?[\/]?/;
 const DEFAULT_TARGET_URL = 'http://localhost:3333';
 
 async function getCookie(sourceUrl) {
@@ -132,7 +134,7 @@ async function getCookie(sourceUrl) {
 async function syncCookie(sourceEl, targetEl) {
   try {
     const sourceUrl = sourceEl.value;
-    let targetUrl = targetEl.value || DEFAULT_TARGET_URL;
+    let targetUrl = targetEl.value.trim();
     if (targetUrl === "") {
       targetEl.value = DEFAULT_TARGET_URL;
     }
@@ -206,6 +208,17 @@ window.onload = function() {
     const tabs = await getCurrentTab();
     const sourceUrl = tabs[0].url;
     sourceEl.value = sourceUrl;
+
+    const regex = /[?&]redirect=([^&]+)/;
+    const match = sourceUrl.match(regex);
+
+    if (match) {
+      const decodedRedirectUrl = decodeURIComponent(match[1]);
+      const temp = new URL(decodedRedirectUrl);
+      const redirectHostname = temp.host;
+      targetEl.value = redirectHostname;
+      targetHref = temp.href;
+    }
   });
 
   showCookieButton.addEventListener('click', async () => {
