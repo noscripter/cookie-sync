@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "cookie sync",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "noscripter",
   "description": "View/Sync Cookies",
   "homepage_url": "https://github.com/noscripter/cookie-sync",

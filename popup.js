@@ -36,6 +36,8 @@ function setCookie(url, opt) {
         url,
         name: opt.name,
         value: opt.value,
+        secure: false,
+        httpOnly: false,
       },
       function(cookie) {
         if (cookie) {
@@ -52,6 +54,8 @@ function setCookie(url, opt) {
         url,
         name: opt.name,
         value: opt.value,
+        secure: false,
+        httpOnly: false,
       },
       function(cookie) {
         if (cookie) {
