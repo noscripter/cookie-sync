@@ -201,11 +201,14 @@ async function setCurrentTab() {
 
   const regex = /[?&]redirect=([^&]+)/;
   const match = sourceUrl.match(regex);
+  const debugEl = document.querySelector('#debug');
 
   if (match) {
     const decodedRedirectUrl = decodeURIComponent(match[1]);
     const temp = new URL(decodedRedirectUrl);
+    const targetEl = document.querySelector('#target');
     targetEl.value = temp.href;
+    debugEl.innerHTML = `${JSON.stringify(temp)}`;
   }
 }
 
