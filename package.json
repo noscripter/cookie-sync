@@ -1,0 +1,12 @@
+{
+  "name": "cookie-sync",
+  "version": "1.0.0",
+  "description": "Sync cookie for local dev",
+  "main": "popup.js",
+  "scripts": {
+    "zip": "zip -r cookie-sync.zip README.md background.js logo.png manifest.json popup.html popup.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
