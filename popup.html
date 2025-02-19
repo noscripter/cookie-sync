@@ -53,13 +53,11 @@
       }
       #sync {
         background: #0F8AF9;
-        padding: 5px 20px !important;
         text-align: center;
         padding: 5px auto;
-        padding-left: 20px !important;
-        padding-right: 20px !important;
+        font-size: 1.5rem;
       }
-      #syncCurrent {
+      #setCurrent {
         padding: 5px 10px;
         background: limegreen;
       }
@@ -89,7 +87,7 @@
         <input id="source" placeholder="enter source domain url(for example: https://www.google.com)" />
         <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
           <button id="showCookie">show source domain cookie</button>
-          <button id="syncCurrent">set current tab as domain</button>
+          <button id="setCurrent">set current tab as domain</button>
         </div>
       </div>
       <div class="section">
@@ -97,7 +95,7 @@
         <input id="target" placeholder="enter target domain url(http://localhost:3333 by default)" />
       </div>
       <div class="section">
-        <button id="sync">Sync Input Domain</button>
+        <button id="sync">Sync</button>
       </div>
       <div id="msg"></div>
     </div>

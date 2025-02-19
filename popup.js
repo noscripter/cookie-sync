@@ -20,8 +20,6 @@ async function getCurrentTab() {
   })
 }
 
-let targetHref = '';
-
 /**
  * 设置cookie
  * @param  {string}  url   [需要设置的 Cookie 相关联的 URL]
@@ -137,6 +135,7 @@ async function syncCookie(sourceEl, targetEl) {
     let targetUrl = targetEl.value.trim();
     if (targetUrl === "") {
       targetEl.value = DEFAULT_TARGET_URL;
+      targetUrl = DEFAULT_TARGET_URL;
     }
     if (!VALID_URL.test(sourceUrl)) {
       showMsg({
@@ -165,7 +164,7 @@ async function syncCookie(sourceEl, targetEl) {
           showMsg({
             message: `sync from ${sourceUrl} to ${targetUrl} success`
           });
-          chrome.tabs.update({ url: targetHref }); // {{ edit_1 }}
+          chrome.tabs.update({ url: document.querySelector('#target').value }); // {{ edit_1 }}
         } catch (e) {
           showMsg({
             message: `sync from ${sourceUrl} to ${targetUrl} failed with error: ${e?.message}`,
@@ -194,33 +193,38 @@ function getWebDomain(url) {
   return hostname;
 }
 
-window.onload = function() {
+async function setCurrentTab() {
+  const tabs = await getCurrentTab();
+  const sourceUrl = tabs[0].url;
+  const sourceEl = document.querySelector('#source');
+  sourceEl.value = sourceUrl;
+
+  const regex = /[?&]redirect=([^&]+)/;
+  const match = sourceUrl.match(regex);
+
+  if (match) {
+    const decodedRedirectUrl = decodeURIComponent(match[1]);
+    const temp = new URL(decodedRedirectUrl);
+    targetEl.value = temp.href;
+  }
+}
+
+window.onload = async function() {
   const sourceEl = document.querySelector('#source');
   const targetEl = document.querySelector('#target');
   const syncButton = document.querySelector('#sync');
-  const syncCurrentButton = document.querySelector('#syncCurrent');
+  const setCurrentButton = document.querySelector('#setCurrent');
   const showCookieButton = document.querySelector('#showCookie');
+
+  // prefilled values
+  targetEl.value = DEFAULT_TARGET_URL;
+  await setCurrentTab();
 
   syncButton.addEventListener('click', async () => {
     await syncCookie(sourceEl, targetEl);
   });
 
-  syncCurrentButton.addEventListener('click', async () => {
-    const tabs = await getCurrentTab();
-    const sourceUrl = tabs[0].url;
-    sourceEl.value = sourceUrl;
-
-    const regex = /[?&]redirect=([^&]+)/;
-    const match = sourceUrl.match(regex);
-
-    if (match) {
-      const decodedRedirectUrl = decodeURIComponent(match[1]);
-      const temp = new URL(decodedRedirectUrl);
-      // const redirectOrigin = temp.origin;
-      targetEl.value = temp.origin;
-      targetHref = temp.href;
-    }
-  });
+  setCurrentButton.addEventListener('click', setCurrentTab);
 
   showCookieButton.addEventListener('click', async () => {
     const sourceUrl = sourceEl.value;
