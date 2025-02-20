@@ -155,7 +155,7 @@ async function syncCookie(sourceEl, targetEl) {
             domain: getWebDomain(targetUrl),
             name: item.name,
             value: item.value,
-            path: item.path,
+            path: '/',
             expirationDate: item.expirationDate
           })
         })
